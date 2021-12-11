@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "users-app"
+version = "0.1.0"
+description = ""
+authors = ["Hazzari <free2mmm@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.70.0"
+uvicorn = "^0.16.0"
+motor = "^2.5.1"
+environs = "^9.3.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
