@@ -35,3 +35,8 @@ class UserCRUD:
     async def update_user(cls, user: User):
         await engine.save(user)
         return user
+
+    @classmethod
+    async def create_user(cls, user: User):
+        await engine.save(user)
+        return 'ok'
