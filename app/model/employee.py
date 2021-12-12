@@ -1,7 +1,7 @@
 from odmantic import Model
 
 
-class User(Model):
+class Employee(Model):
     name: str
     email: str
     age: int
