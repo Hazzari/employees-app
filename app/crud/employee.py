@@ -42,7 +42,6 @@ class EmployeeCRUD:
     async def update_employee(cls, employee: Employee):
         """ Обновление данных сотрудника
         """
-
         await engine.save(employee)
         return employee
 
@@ -50,18 +49,17 @@ class EmployeeCRUD:
     async def create_employee(cls, employee: Employee):
         """ Создание сотрудника
         """
-        await engine.save(employee)
-        return 'ok'
+        return await engine.save(employee)
 
     @classmethod
-    async def delete_employee(cls, employee: Employee):
+    async def delete_employee(cls, id: str):
         """ Удаление сотрудника
         """
-        try:
-            await engine.delete(employee)
-            return f'{employee.name} удален!'
-        except Exception as e:
-            raise HTTPException(404, e)
+        emp = await engine.find_one(Employee, Employee.id == ObjectId(id))
+        if emp is None:
+            raise HTTPException(404, 'Employee not found')
+        await engine.delete(emp)
+        return f'{emp.name} удален!'
 
     @classmethod
     async def search(cls, **kwargs):
