@@ -10,19 +10,7 @@ from app.model.employee import Employee
 router = APIRouter()
 
 
-@router.get("/employee/search", tags=["Search"])
-async def search_employees(
-        age: Optional[int] = Query(0, ge=0, description='Возраст'),
-        age_min: Optional[int] = Query(16, description='Минимальный возраст'),
-        age_max: Optional[int] = Query(90, description='Максимальный возраст'),
-):
-    return await EmployeeCRUD.filter(age_min=age_min,
-                                     age=age,
-                                     age_max=age_max,
-                                     )
-
-
-@router.get("/employee/", response_model=List[Employee], tags=["Search"])
+@router.get("/employee/", response_model=List[Employee], tags=["All"])
 async def get_employees():
     return await EmployeeCRUD.get_employees()
 
@@ -53,3 +41,35 @@ async def update_employee(employee: Employee):
 @router.delete("/employee/", response_model=Employee, tags=["CRUD"])
 async def update_employee(employee: Employee):
     return await EmployeeCRUD.delete_employee(employee)
+
+
+@router.get("/employee/search/", tags=["Search"])
+async def search_employees(
+        name: Optional[str] = Query(None, description='Имя'),
+        company: Optional[str] = Query(None, description='Компания'),
+        email: Optional[str] = Query(None, description='Email'),
+        age: Optional[int] = Query(None, description='Возраст'),
+        age_min: Optional[int] = Query(
+            None, description='Минимальный возраст'),
+        age_max: Optional[int] = Query(
+            None, description='Максимальный возраст'),
+        salary_min: Optional[int] = Query(
+            None, description='Минимальная зарплата'),
+        salary_max: Optional[int] = Query(
+            None, description='Максимальная зарплата'),
+):
+    request_search_params = {
+        "age": age,
+        'age_min': age_min,
+        'age_max': age_max,
+        'name': name,
+        'email': email,
+        'company': company,
+        'salary_min': salary_min,
+        'salary_max': salary_max,
+    }
+
+    return await EmployeeCRUD.search(
+        **{x: k for x, k in request_search_params.items()
+           if k is not None}
+    )

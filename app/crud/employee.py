@@ -1,7 +1,8 @@
+import re
 from dataclasses import dataclass
 
 from fastapi import APIRouter, HTTPException
-from odmantic import ObjectId
+from odmantic import ObjectId, query
 
 from app.database.database import engine
 from app.model.employee import Employee
@@ -63,21 +64,58 @@ class EmployeeCRUD:
             raise HTTPException(404, e)
 
     @classmethod
-    async def filter(cls, age_min: int, age: int, age_max: int):
-        """ Фильтрация по возрасту.
-                    Или по точному указанию, либо по диапазону.
+    async def search(cls, **kwargs):
+        """ Поиск по параметрам
 
-            :param age: Фильтрация по возрасту.
-            :param age_min: Фильтрация по минимальному возрасту.
-            :param age_max: Фильтрация по максимальному возрасту.
-            :return: {list} Найденные пользователи. Отсортированные по возрастанию.
-            """
-        if age:
-            result = await engine.find(Employee, Employee.age == age)
-        else:
-            result = await engine.find(
-                Employee,
-                (Employee.age >= age_min) & (Employee.age <= age_max),
-                sort=Employee.age,
-            )
+            Ищет только по 1 параметру
+
+            приоритет поиска:
+            - имя
+            - email
+            - company
+            - age
+            - диапазон возраста
+            - диапазон зарплат
+
+        """
+
+        match kwargs:
+            case kwargs if kwargs.get('name'):
+                result = await engine.find(
+                    Employee, query.match(Employee.name,
+                                          re.compile(
+                                              f"{kwargs['name']}")), )
+
+            case kwargs if kwargs.get('email'):
+                result = await engine.find(
+                    Employee, query.match(Employee.email,
+                                          re.compile(f"{kwargs['email']}")))
+
+            case kwargs if kwargs.get('company'):
+                result = await engine.find(
+                    Employee, query.match(Employee.company,
+                                          re.compile(
+                                              f"{kwargs['company']}")))
+
+            case kwargs if kwargs.get('age'):
+                result = await engine.find(Employee,
+                                           Employee.age == kwargs['age'])
+
+            case kwargs if (kwargs.get('age_min') or kwargs.get('age_max')):
+                result = await engine.find(
+                    Employee,
+                    (Employee.age >= kwargs.get('age_min', 0)) &
+                    (Employee.age <= kwargs.get('age_max', 100)),
+                    sort=Employee.age, )
+
+            case kwargs if (
+                    kwargs.get('salary_min') or kwargs.get('salary_max')):
+                result = await engine.find(
+                    Employee,
+                    (Employee.salary >= kwargs.get('salary_min', 0)) &
+                    (Employee.salary <= kwargs.get('salary_max', 1000000)),
+                    sort=Employee.salary, )
+            case _:
+                result = []
+
         return result
