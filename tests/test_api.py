@@ -3,7 +3,6 @@ import json
 import pytest
 
 
-# TODO: При повышении версии FastAPI тестовый клиент ломается, из-за изменений
 # в зависимостях фреймворка
 @pytest.mark.dependency()
 def test_count_employees(test_app, test_data, response_data):
