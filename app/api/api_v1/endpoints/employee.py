@@ -2,7 +2,6 @@ from typing import List
 from typing import Optional
 
 from fastapi import APIRouter, Query, status
-from fastapi import Request
 from odmantic import ObjectId
 
 from app.crud.employee import EmployeeCRUD
@@ -33,7 +32,7 @@ async def get_employee_by_id(id: ObjectId):
 
 
 @router.put("/employee/", response_model=Employee, tags=["CRUD"])
-async def update_employee(employee: Employee, request: Request):
+async def update_employee(employee: Employee):
     return await EmployeeCRUD.update_employee(employee)
 
 
