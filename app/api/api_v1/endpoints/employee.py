@@ -55,7 +55,7 @@ async def search_employees(
         name: Optional[str] = Query(None, description='Имя'),
         company: Optional[str] = Query(None, description='Компания'),
         email: Optional[str] = Query(None, description='Email'),
-        age: Optional[int] = Query(None, description='Возраст'),
+        gender: Optional[str] = Query(None, description='Gender'),
         age_min: Optional[int] = Query(
             None, description='Минимальный возраст'),
         age_max: Optional[int] = Query(
@@ -66,7 +66,7 @@ async def search_employees(
             None, description='Максимальная зарплата'),
 ):
     request_search_params = {
-        "age": age,
+        "gender": gender,
         'age_min': age_min,
         'age_max': age_max,
         'name': name,
