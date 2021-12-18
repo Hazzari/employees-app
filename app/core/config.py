@@ -7,5 +7,6 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', 'localhost')
 API_V1_STR = "/api"
 MONGO_HOST = env.str('MONGO_HOST', 'localhost')
 MONGO_PORT = env.str('MONGO_PORT', '27017')
+MONGO_DB = env.str('MONGO_DB', 'test')
 
 MONGO_DB_URL = f'mongodb://{MONGO_HOST}:{MONGO_PORT}/'
